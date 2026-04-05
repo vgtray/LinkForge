@@ -1,13 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { KPICards } from "@/components/analytics/KPICards";
-import { ClickChart } from "@/components/analytics/ClickChart";
 import { LinkTable } from "@/components/analytics/LinkTable";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getApiUrl } from "@/lib/utils";
 import type { AnalyticsSummary, TimelineData } from "@/types";
 import { toast } from "sonner";
+
+const ClickChart = dynamic(
+  () => import("@/components/analytics/ClickChart").then((mod) => mod.ClickChart),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[300px] w-full animate-pulse rounded-xl bg-[#18181B]" />
+    ),
+  }
+);
 
 function getToken(): string | null {
   if (typeof window === "undefined") return null;

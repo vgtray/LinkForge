@@ -15,7 +15,8 @@
     "prisma:studio": "prisma studio"
   },
   "prisma": {
-    "schema": "server/prisma/schema.prisma"
+    "schema": "server/prisma/schema.prisma",
+    "seed": "tsx server/prisma/seed.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
