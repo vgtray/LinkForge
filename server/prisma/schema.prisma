@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password_hash String
+  username      String   @unique
+  avatar_url    String?
+  refresh_token String?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  page          Page?
+}
+
+model Page {
+  id              String           @id @default(uuid())
+  user            User             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id         String           @unique
+  title           String?
+  bio             String?
+  theme           Json             @default("{}")
+  seo_title       String?
+  seo_description String?
+  favicon_url     String?
+  is_published    Boolean          @default(false)
+  created_at      DateTime         @default(now())
+  updated_at      DateTime         @updatedAt
+  blocks          Block[]
+  events          AnalyticsEvent[]
+}
+
+model Block {
+  id         String           @id @default(uuid())
+  page       Page             @relation(fields: [page_id], references: [id], onDelete: Cascade)
+  page_id    String
+  type       BlockType
+  title      String?
+  url        String?
+  icon       String?
+  position   Int
+  settings   Json             @default("{}")
+  is_visible Boolean          @default(true)
+  created_at DateTime         @default(now())
+  updated_at DateTime         @updatedAt
+  events     AnalyticsEvent[]
+}
+
+enum BlockType {
+  link
+  header
+  social
+  about
+  embed
+}
+
+model AnalyticsEvent {
+  id         String    @id @default(uuid())
+  page       Page      @relation(fields: [page_id], references: [id], onDelete: Cascade)
+  page_id    String
+  block      Block?    @relation(fields: [block_id], references: [id])
+  block_id   String?
+  event_type EventType
+  referrer   String?
+  ip_hash    String?
+  user_agent String?
+  created_at DateTime  @default(now())
+
+  @@index([page_id, created_at])
+  @@index([page_id, block_id])
+}
+
+enum EventType {
+  view
+  click
+}
