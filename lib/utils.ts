@@ -30,5 +30,8 @@ export function getBaseUrl(): string {
 }
 
 export function getApiUrl(): string {
-  return process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+  // Browser: relative URL → Next.js rewrites /api/* to API container
+  if (typeof window !== "undefined") return "";
+  // Server-side (SSR): use Docker internal network
+  return process.env.API_INTERNAL_URL || "http://api:4000";
 }

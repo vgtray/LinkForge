@@ -4,13 +4,8 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '4000',
-      },
-      {
         protocol: 'https',
-        hostname: 'api.linkf.vgtray.fr',
+        hostname: 'linkf.vgtray.fr',
       },
     ],
   },
@@ -18,6 +13,14 @@ const nextConfig = {
   webpack: (config) => {
     config.externals = [...(config.externals || []), { canvas: 'canvas' }];
     return config;
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://api:4000/api/:path*',
+      },
+    ];
   },
 };
 
