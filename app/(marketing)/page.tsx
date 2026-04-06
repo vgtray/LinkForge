@@ -108,7 +108,7 @@ function HeroSection() {
   return (
     <section
       ref={heroRef}
-      className="relative flex min-h-screen flex-col justify-end overflow-hidden pb-28"
+      className="relative flex min-h-screen flex-col justify-center overflow-hidden py-20"
       style={{ padding: "0 var(--lf-pad-x)" }}
     >
       <Hero3D />
@@ -118,7 +118,7 @@ function HeroSection() {
           ref={titleRef}
           className="font-display font-extrabold uppercase text-[var(--lf-text-primary)]"
           style={{
-            fontSize: "clamp(4rem, 15vw, 12rem)",
+            fontSize: "clamp(2.5rem, 8vw, 7rem)",
             letterSpacing: "-0.04em",
             lineHeight: 0.9,
           }}
