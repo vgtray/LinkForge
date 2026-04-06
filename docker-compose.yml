@@ -63,3 +63,8 @@ services:
 volumes:
   postgres_data:
   uploads_data:
+networks:
+  dokploy-network:
+    external: true
+  linkforge-internal:
+    driver: bridge
