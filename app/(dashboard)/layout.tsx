@@ -21,9 +21,6 @@ const NAV_ITEMS = [
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
-
-}
-
 export default function DashboardLayout({
   children,
 }: {
