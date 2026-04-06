@@ -70,7 +70,7 @@ export default function CTASection() {
             Join thousands of creators who chose LinkForge.
           </p>
           <Link
-            href="/auth/register"
+            href="/register"
             className="mt-10 inline-flex items-center rounded-full bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-8 py-4 text-base font-semibold text-white transition-shadow hover:shadow-[0_0_24px_rgba(59,130,246,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090B]"
           >
             Get started for free
