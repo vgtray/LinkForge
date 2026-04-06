@@ -88,6 +88,15 @@ export async function apiClient<T = unknown>(
     }
   }
 
+  // Handle non-JSON responses gracefully
+  const contentType = res.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    if (!res.ok) {
+      throw new Error(`Server error (${res.status})`);
+    }
+    throw new Error("Unexpected response from server");
+  }
+
   const data = await res.json();
 
   if (!res.ok) {
