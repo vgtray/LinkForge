@@ -1,0 +1,15 @@
+node_modules
+.next
+dist
+.git
+.claude
+.DS_Store
+*.md
+!README.md
+.env
+.env.*
+.vscode
+.idea
+public/uploads/*
+coverage
+npm-debug.log*
