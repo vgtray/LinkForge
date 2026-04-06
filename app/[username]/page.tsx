@@ -11,13 +11,16 @@ interface Props {
 
 async function getPage(username: string): Promise<Page | null> {
   try {
-    const res = await fetch(`${getApiUrl()}/api/pages/${username}`, {
+    const apiBase = process.env.API_INTERNAL_URL || "http://api:4000";
+    const res = await fetch(`${apiBase}/api/pages/${username}`, {
       cache: "no-store",
+      signal: AbortSignal.timeout(5000),
     });
     if (!res.ok) return null;
     const data = await res.json();
     return data.page ?? null;
-  } catch {
+  } catch (err) {
+    console.error("[getPage] Failed to fetch page:", err);
     return null;
   }
 }
