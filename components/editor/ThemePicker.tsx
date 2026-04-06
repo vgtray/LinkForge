@@ -22,6 +22,7 @@ export function ThemePicker({
   const isSelected = (preset: ThemeConfig) => {
     return (
       preset.backgroundColor === currentTheme.backgroundColor &&
+      preset.buttonColor === currentTheme.buttonColor &&
       preset.buttonStyle === currentTheme.buttonStyle
     );
   };
