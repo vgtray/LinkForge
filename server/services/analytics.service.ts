@@ -22,17 +22,20 @@ export async function recordEvent(
   });
 }
 
-export async function getSummary(pageId: string) {
+export async function getSummary(pageId: string, days: number) {
+  const since = new Date();
+  since.setDate(since.getDate() - days);
+
   const [views, clicks, topLinks] = await Promise.all([
     prisma.analyticsEvent.count({
-      where: { page_id: pageId, event_type: "view" },
+      where: { page_id: pageId, event_type: "view", created_at: { gte: since } },
     }),
     prisma.analyticsEvent.count({
-      where: { page_id: pageId, event_type: "click" },
+      where: { page_id: pageId, event_type: "click", created_at: { gte: since } },
     }),
     prisma.analyticsEvent.groupBy({
       by: ["block_id"],
-      where: { page_id: pageId, event_type: "click", block_id: { not: null } },
+      where: { page_id: pageId, event_type: "click", block_id: { not: null }, created_at: { gte: since } },
       _count: { id: true },
       orderBy: { _count: { id: "desc" } },
       take: 10,

@@ -102,7 +102,7 @@ function LinkButton({
   const style = theme.buttonStyle || "fill";
 
   function handleClick() {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/analytics/event`, {
+    fetch(`/api/analytics/event`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -192,7 +192,7 @@ function BlockRenderer({
               className="opacity-70 transition-opacity hover:opacity-100"
               onClick={() => {
                 fetch(
-                  `${process.env.NEXT_PUBLIC_API_URL || ""}/api/analytics/event`,
+                  `/api/analytics/event`,
                   {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },

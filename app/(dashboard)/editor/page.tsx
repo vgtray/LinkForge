@@ -154,9 +154,6 @@ export default function EditorPage() {
         body: JSON.stringify({
           type,
           title: type === "about" ? "About" : "",
-          url: "",
-          position: blocks.length,
-          is_visible: true,
           settings: {},
         }),
       });

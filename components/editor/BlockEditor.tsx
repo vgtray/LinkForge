@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +23,8 @@ const SOCIAL_PLATFORMS = [
   "youtube",
   "tiktok",
   "website",
+  "email",
+  "spotify",
 ] as const;
 
 const ICON_OPTIONS = [
@@ -41,6 +44,11 @@ const ICON_OPTIONS = [
   "zap",
 ] as const;
 
+interface SocialLink {
+  platform: string;
+  url: string;
+}
+
 export function BlockEditor({
   block,
   onSave,
@@ -53,8 +61,8 @@ export function BlockEditor({
   const [title, setTitle] = useState(block.title ?? "");
   const [url, setUrl] = useState(block.url ?? "");
   const [icon, setIcon] = useState(block.icon ?? "");
-  const [platform, setPlatform] = useState(
-    (block.settings?.platform as string) ?? "github"
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>(
+    (block.settings?.links as SocialLink[]) ?? [{ platform: "github", url: "" }]
   );
   const [bio, setBio] = useState(
     (block.settings?.bio as string) ?? ""
@@ -74,8 +82,7 @@ export function BlockEditor({
       case "header":
         break;
       case "social":
-        data.url = url;
-        data.settings = { ...block.settings, platform };
+        data.settings = { ...block.settings, links: socialLinks.filter((l) => l.url) };
         break;
       case "about":
         data.settings = { ...block.settings, bio, avatar_url: avatarUrl };
@@ -86,6 +93,18 @@ export function BlockEditor({
     }
 
     onSave(data);
+  };
+
+  const updateSocialLink = (index: number, field: keyof SocialLink, value: string) => {
+    setSocialLinks((prev) => prev.map((link, i) => (i === index ? { ...link, [field]: value } : link)));
+  };
+
+  const addSocialLink = () => {
+    setSocialLinks((prev) => [...prev, { platform: "github", url: "" }]);
+  };
+
+  const removeSocialLink = (index: number) => {
+    setSocialLinks((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -152,40 +171,57 @@ export function BlockEditor({
 
         {/* Social type */}
         {block.type === "social" && (
-          <>
-            <div>
-              <label className="mb-1 block text-xs font-medium text-[#A1A1AA]">
-                Platform
-              </label>
-              <Select value={platform} onValueChange={setPlatform}>
-                <SelectTrigger className="border-[#27272A] bg-[#09090B] text-[#FAFAFA] text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="border-[#27272A] bg-[#18181B]">
-                  {SOCIAL_PLATFORMS.map((p) => (
-                    <SelectItem
-                      key={p}
-                      value={p}
-                      className="text-[#FAFAFA] capitalize focus:bg-[#27272A] focus:text-[#FAFAFA]"
-                    >
-                      {p}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-medium text-[#A1A1AA]">
-                URL
-              </label>
-              <Input
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://..."
-                className="border-[#27272A] bg-[#09090B] text-[#FAFAFA] text-sm focus-visible:ring-[#3B82F6]"
-              />
-            </div>
-          </>
+          <div className="space-y-3">
+            <label className="block text-xs font-medium text-[#A1A1AA]">
+              Social Links
+            </label>
+            {socialLinks.map((link, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <Select
+                  value={link.platform}
+                  onValueChange={(val) => updateSocialLink(index, "platform", val)}
+                >
+                  <SelectTrigger className="w-[130px] border-[#27272A] bg-[#09090B] text-[#FAFAFA] text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="border-[#27272A] bg-[#18181B]">
+                    {SOCIAL_PLATFORMS.map((p) => (
+                      <SelectItem
+                        key={p}
+                        value={p}
+                        className="text-[#FAFAFA] capitalize focus:bg-[#27272A] focus:text-[#FAFAFA]"
+                      >
+                        {p}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input
+                  value={link.url}
+                  onChange={(e) => updateSocialLink(index, "url", e.target.value)}
+                  placeholder="https://..."
+                  className="flex-1 border-[#27272A] bg-[#09090B] text-[#FAFAFA] text-sm focus-visible:ring-[#3B82F6]"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeSocialLink(index)}
+                  className="shrink-0 rounded p-1.5 text-[#A1A1AA] hover:bg-[#27272A] hover:text-[#FAFAFA] focus-visible:ring-2 focus-visible:ring-[#3B82F6] focus-visible:outline-none"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ))}
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={addSocialLink}
+              className="border-[#27272A] text-[#A1A1AA] hover:bg-[#27272A] hover:text-[#FAFAFA] text-xs"
+            >
+              <Plus className="mr-1 h-3 w-3" />
+              Add link
+            </Button>
+          </div>
         )}
 
         {/* About type */}

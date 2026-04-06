@@ -7,7 +7,7 @@ services:
       - "3000"
     environment:
       - DATABASE_URL=postgresql://linkforge:${DB_PASSWORD:-password}@db:5432/linkforge_db
-      - NEXT_PUBLIC_API_URL=http://api:4000
+      - API_INTERNAL_URL=http://api:4000
       - NEXT_PUBLIC_APP_URL=http://localhost:3000
     depends_on:
       db:
@@ -28,7 +28,7 @@ services:
       - JWT_SECRET=${JWT_SECRET:-dev-jwt-secret-change-me}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dev-refresh-secret-change-me}
       - NODE_ENV=production
-      - CORS_ORIGIN=http://front:3000
+      - CORS_ORIGIN=https://linkf.vgtray.fr
     volumes:
       - uploads_data:/app/uploads
     depends_on:

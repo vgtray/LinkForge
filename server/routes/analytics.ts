@@ -51,14 +51,19 @@ router.post("/event", analyticsLimiter, async (req: Request, res: Response) => {
 
 router.get("/summary", authenticate, async (req: Request, res: Response) => {
   try {
+    const { days } = timelineSchema.parse(req.query);
     const page = await prisma.page.findUnique({ where: { user_id: req.user!.userId } });
     if (!page) {
       res.status(404).json({ error: "Not Found", message: "Page not found", statusCode: 404 });
       return;
     }
-    const summary = await analyticsService.getSummary(page.id);
-    res.json(summary);
+    const summary = await analyticsService.getSummary(page.id, days);
+    res.json({ summary });
   } catch (err: any) {
+    if (err instanceof z.ZodError) {
+      res.status(400).json({ error: "Validation Error", message: err.errors[0].message, statusCode: 400 });
+      return;
+    }
     const status = err.statusCode || 500;
     res.status(status).json({ error: "Error", message: err.message, statusCode: status });
   }
