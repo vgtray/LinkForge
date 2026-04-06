@@ -1,6 +1,6 @@
-import { PrismaClient, EventType } from "@prisma/client";
+import { EventType } from "@prisma/client";
+import { prisma } from "../lib/prisma";
 
-const prisma = new PrismaClient();
 
 export async function recordEvent(
   pageId: string,

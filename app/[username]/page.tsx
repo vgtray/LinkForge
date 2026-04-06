@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import type { Page, Block, ThemeConfig } from "@/types";
 import { getApiUrl } from "@/lib/utils";
+import Image from "next/image";
 import { ViewTracker } from "./view-tracker";
 
 interface Props {
@@ -14,7 +15,8 @@ async function getPage(username: string): Promise<Page | null> {
       cache: "no-store",
     });
     if (!res.ok) return null;
-    return res.json();
+    const data = await res.json();
+    return data.page ?? null;
   } catch {
     return null;
   }
@@ -85,7 +87,7 @@ function getEmbedUrl(url: string): { type: "youtube" | "spotify" | null; embedUr
     };
   }
 
-  return { type: null, embedUrl: url };
+  return { type: null, embedUrl: "" };
 }
 
 function LinkButton({
@@ -220,6 +222,7 @@ function BlockRenderer({
     case "embed": {
       if (!block.url) return null;
       const { type, embedUrl } = getEmbedUrl(block.url);
+      if (!embedUrl) return null;
       return (
         <div className="overflow-hidden" style={{ borderRadius: "var(--radius, 12px)" }}>
           <iframe
@@ -230,6 +233,7 @@ function BlockRenderer({
             allow="autoplay; encrypted-media"
             allowFullScreen
             loading="lazy"
+            sandbox="allow-scripts allow-same-origin"
           />
         </div>
       );
@@ -281,9 +285,11 @@ export default async function UserPage({ params }: Props) {
         {/* Avatar */}
         <div className="mb-4">
           {page.user?.avatar_url ? (
-            <img
+            <Image
               src={page.user.avatar_url}
               alt={username}
+              width={80}
+              height={80}
               className="h-20 w-20 rounded-full object-cover"
             />
           ) : (

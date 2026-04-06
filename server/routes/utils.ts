@@ -1,8 +1,7 @@
 import { Router, Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../lib/prisma";
 import QRCode from "qrcode";
 
-const prisma = new PrismaClient();
 const router = Router();
 
 const USERNAME_REGEX = /^[a-z0-9_-]{3,30}$/;

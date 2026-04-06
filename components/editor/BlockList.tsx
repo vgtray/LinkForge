@@ -33,12 +33,9 @@ import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { BlockEditor } from "@/components/editor/BlockEditor";
 import { cn, getApiUrl } from "@/lib/utils";
+import { getAccessToken } from "@/lib/api";
 import type { Block, BlockType } from "@/types";
 
-function getToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("access_token");
-}
 
 const BLOCK_ICONS: Record<BlockType, React.ElementType> = {
   link: LinkIcon,
@@ -194,7 +191,7 @@ export function BlockList({
     }));
     setBlocks(reordered);
 
-    const token = getToken();
+    const token = getAccessToken();
     try {
       await fetch(`${getApiUrl()}/api/blocks/reorder`, {
         method: "PUT",
@@ -204,7 +201,7 @@ export function BlockList({
         },
         credentials: "include",
         body: JSON.stringify({
-          order: reordered.map((b) => b.id),
+          orderedIds: reordered.map((b) => b.id),
         }),
       });
     } catch {
@@ -216,7 +213,7 @@ export function BlockList({
     setBlocks((prev) =>
       prev.map((b) => (b.id === id ? { ...b, ...data } : b))
     );
-    const token = getToken();
+    const token = getAccessToken();
     try {
       const res = await fetch(`${getApiUrl()}/api/blocks/${id}`, {
         method: "PUT",
@@ -235,7 +232,7 @@ export function BlockList({
 
   const handleDeleteBlock = async (id: string) => {
     setBlocks((prev) => prev.filter((b) => b.id !== id));
-    const token = getToken();
+    const token = getAccessToken();
     try {
       await fetch(`${getApiUrl()}/api/blocks/${id}`, {
         method: "DELETE",

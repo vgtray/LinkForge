@@ -6,6 +6,7 @@ import { KPICards } from "@/components/analytics/KPICards";
 import { LinkTable } from "@/components/analytics/LinkTable";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getApiUrl } from "@/lib/utils";
+import { getAccessToken } from "@/lib/api";
 import type { AnalyticsSummary, TimelineData } from "@/types";
 import { toast } from "sonner";
 
@@ -19,10 +20,6 @@ const ClickChart = dynamic(
   }
 );
 
-function getToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("access_token");
-}
 
 export default function AnalyticsPage() {
   const [period, setPeriod] = useState<"7" | "30">("7");
@@ -31,7 +28,7 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = getToken();
+    const token = getAccessToken();
     if (!token) return;
     const headers = {
       Authorization: `Bearer ${token}`,

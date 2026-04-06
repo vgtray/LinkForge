@@ -2,7 +2,7 @@
 
 import { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import * as THREE from "three";
+import { AdditiveBlending } from "three";
 import {
   createParticlePositions,
   DEFAULT_PARTICLE_CONFIG,
@@ -69,11 +69,11 @@ function ParticleField() {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={DEFAULT_PARTICLE_CONFIG.size}
+        size={0.03}
         color={DEFAULT_PARTICLE_CONFIG.color}
         transparent
         opacity={0.12}
-        blending={THREE.AdditiveBlending}
+        blending={AdditiveBlending}
         depthWrite={false}
         sizeAttenuation
       />
@@ -110,7 +110,7 @@ export default function Hero3D() {
       <Canvas
         camera={{ position: [0, 0, 8], fov: 60 }}
         style={{ background: "transparent" }}
-        dpr={[1, 2]}
+        dpr={[1, 1.5]}
         gl={{ alpha: true, antialias: false, powerPreference: "high-performance" }}
       >
         <ParticleField />

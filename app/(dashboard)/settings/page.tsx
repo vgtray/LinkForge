@@ -14,12 +14,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { getApiUrl } from "@/lib/utils";
+import { getAccessToken, clearAccessToken } from "@/lib/api";
 import type { User } from "@/types";
 
-function getToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("access_token");
-}
 
 export default function SettingsPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -33,7 +30,7 @@ export default function SettingsPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   useEffect(() => {
-    const token = getToken();
+    const token = getAccessToken();
     if (!token) return;
     fetch(`${getApiUrl()}/api/auth/me`, {
       headers: {
@@ -56,7 +53,7 @@ export default function SettingsPage() {
   }, []);
 
   const handleSaveProfile = async () => {
-    const token = getToken();
+    const token = getAccessToken();
     setSavingProfile(true);
     try {
       const res = await fetch(`${getApiUrl()}/api/auth/me`, {
@@ -89,7 +86,7 @@ export default function SettingsPage() {
       toast.error("Password must be at least 8 characters");
       return;
     }
-    const token = getToken();
+    const token = getAccessToken();
     setSavingPassword(true);
     try {
       const res = await fetch(`${getApiUrl()}/api/auth/password`, {
@@ -120,7 +117,7 @@ export default function SettingsPage() {
   };
 
   const handleDeleteAccount = async () => {
-    const token = getToken();
+    const token = getAccessToken();
     try {
       const res = await fetch(`${getApiUrl()}/api/auth/me`, {
         method: "DELETE",
@@ -131,7 +128,7 @@ export default function SettingsPage() {
         credentials: "include",
       });
       if (!res.ok) throw new Error();
-      localStorage.removeItem("access_token");
+      clearAccessToken();
       window.location.href = "/";
     } catch {
       toast.error("Failed to delete account");

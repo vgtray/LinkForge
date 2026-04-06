@@ -1,6 +1,6 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { prisma } from "../lib/prisma";
 
-const prisma = new PrismaClient();
 
 export async function getByUsername(username: string) {
   const page = await prisma.page.findFirst({
@@ -41,6 +41,7 @@ export async function update(
     theme?: Record<string, unknown>;
     seo_title?: string;
     seo_description?: string;
+    is_published?: boolean;
   }
 ) {
   const updateData: Prisma.PageUpdateInput = {};
@@ -49,6 +50,7 @@ export async function update(
   if (data.seo_title !== undefined) updateData.seo_title = data.seo_title;
   if (data.seo_description !== undefined) updateData.seo_description = data.seo_description;
   if (data.theme !== undefined) updateData.theme = data.theme as Prisma.InputJsonValue;
+  if (data.is_published !== undefined) updateData.is_published = data.is_published;
 
   return prisma.page.update({
     where: { user_id: userId },

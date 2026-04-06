@@ -19,6 +19,7 @@ import { ThemePicker } from "@/components/editor/ThemePicker";
 import { ColorPicker } from "@/components/editor/ColorPicker";
 import { LivePreview } from "@/components/editor/LivePreview";
 import { getApiUrl } from "@/lib/utils";
+import { getAccessToken } from "@/lib/api";
 import type { Page, Block, BlockType, ThemeConfig } from "@/types";
 
 const BLOCK_TYPES: { type: BlockType; label: string; icon: React.ElementType }[] = [
@@ -29,10 +30,6 @@ const BLOCK_TYPES: { type: BlockType; label: string; icon: React.ElementType }[]
   { type: "embed", label: "Embed", icon: Play },
 ];
 
-function getToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("access_token");
-}
 
 export default function EditorPage() {
   const [page, setPage] = useState<Page | null>(null);
@@ -44,7 +41,7 @@ export default function EditorPage() {
 
   // Load page + blocks
   useEffect(() => {
-    const token = getToken();
+    const token = getAccessToken();
     if (!token) return;
     const headers = {
       Authorization: `Bearer ${token}`,
@@ -76,7 +73,7 @@ export default function EditorPage() {
       saveTimer.current = setTimeout(async () => {
         setSaving(true);
         setSaved(false);
-        const token = getToken();
+        const token = getAccessToken();
         try {
           const res = await fetch(`${getApiUrl()}/api/pages/me`, {
             method: "PUT",
@@ -126,27 +123,26 @@ export default function EditorPage() {
 
   const handleTogglePublish = async () => {
     if (!page) return;
-    const token = getToken();
     try {
-      const res = await fetch(`${getApiUrl()}/api/pages/me`, {
-        method: "PUT",
+      const res = await fetch(`${getApiUrl()}/api/pages/me/publish`, {
+        method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${getAccessToken()}`,
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ is_published: !page.is_published }),
       });
       if (!res.ok) throw new Error();
-      setPage((prev) => (prev ? { ...prev, is_published: !prev.is_published } : prev));
-      toast.success(page.is_published ? "Page unpublished" : "Page published!");
+      const data = await res.json();
+      setPage((prev) => prev ? { ...prev, is_published: data.page.is_published } : prev);
+      toast.success(data.page.is_published ? "Page published!" : "Page unpublished");
     } catch {
       toast.error("Failed to update publish status");
     }
   };
 
   const handleAddBlock = async (type: BlockType) => {
-    const token = getToken();
+    const token = getAccessToken();
     try {
       const res = await fetch(`${getApiUrl()}/api/blocks`, {
         method: "POST",

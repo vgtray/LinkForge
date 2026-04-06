@@ -10,7 +10,7 @@ const updateSchema = z.object({
   bio: z.string().max(500).optional(),
   theme: z.record(z.unknown()).optional(),
   seo_title: z.string().max(100).optional(),
-  seo_description: z.string().max(200).optional(),
+  seo_description: z.string().max(200).optional(),\n  is_published: z.boolean().optional(),
 });
 
 router.get("/me", authenticate, async (req: Request, res: Response) => {

@@ -4,7 +4,11 @@ import { useEffect } from "react";
 
 export function ViewTracker({ pageId }: { pageId: string }) {
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/analytics/event`, {
+    const key = \`lf_viewed_\${pageId}\`;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, "1");
+
+    fetch(\`\${process.env.NEXT_PUBLIC_API_URL || ""}/api/analytics/event\`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

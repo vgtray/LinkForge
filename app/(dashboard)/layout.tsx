@@ -12,6 +12,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { cn, getApiUrl } from "@/lib/utils";
+import { getAccessToken, clearAccessToken } from "@/lib/api";
 import type { User } from "@/types";
 
 const NAV_ITEMS = [
@@ -20,15 +21,7 @@ const NAV_ITEMS = [
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
-function getToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("access_token");
-}
 
-function clearToken() {
-  if (typeof window !== "undefined") {
-    localStorage.removeItem("access_token");
-  }
 }
 
 export default function DashboardLayout({
@@ -42,7 +35,7 @@ export default function DashboardLayout({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = getToken();
+    const token = getAccessToken();
     if (!token) {
       router.replace("/login");
       return;
@@ -64,13 +57,13 @@ export default function DashboardLayout({
         setLoading(false);
       })
       .catch(() => {
-        clearToken();
+        clearAccessToken();
         router.replace("/login");
       });
   }, [router]);
 
   const handleLogout = () => {
-    clearToken();
+    clearAccessToken();
     router.replace("/login");
   };
 

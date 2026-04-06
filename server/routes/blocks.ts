@@ -1,9 +1,9 @@
 import { Router, Request, Response } from "express";
 import { z } from "zod";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { prisma } from "../lib/prisma";
 import { authenticate } from "../middleware/auth";
 
-const prisma = new PrismaClient();
 const router = Router();
 
 const blockTypeEnum = z.enum(["link", "header", "social", "about", "embed"]);

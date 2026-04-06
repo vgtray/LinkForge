@@ -1,9 +1,8 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../lib/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
-const prisma = new PrismaClient();
 
 function signAccessToken(userId: string, username: string): string {
   return jwt.sign({ userId, username }, process.env.JWT_SECRET!, { expiresIn: "15m" });
@@ -27,7 +26,6 @@ export async function register(email: string, password: string, username: string
   }
 
   const password_hash = await bcrypt.hash(password, 12);
-  const refreshToken = signRefreshToken("");
 
   const user = await prisma.user.create({
     data: {
@@ -111,4 +109,49 @@ export async function getMe(userId: string) {
   if (!user) throw Object.assign(new Error("User not found"), { statusCode: 404 });
   const { password_hash: _, refresh_token: __, ...safeUser } = user;
   return safeUser;
+}
+
+export async function updateProfile(userId: string, data: { username?: string; email?: string }) {
+  if (data.username || data.email) {
+    const existing = await prisma.user.findFirst({
+      where: {
+        AND: [
+          { id: { not: userId } },
+          { OR: [
+            ...(data.username ? [{ username: data.username }] : []),
+            ...(data.email ? [{ email: data.email }] : []),
+          ]},
+        ],
+      },
+    });
+    if (existing) {
+      const field = data.email && existing.email === data.email ? "email" : "username";
+      throw Object.assign(new Error(`This ${field} is already taken`), { statusCode: 409 });
+    }
+  }
+  const user = await prisma.user.update({
+    where: { id: userId },
+    data: { ...(data.username && { username: data.username }), ...(data.email && { email: data.email }) },
+  });
+  const { password_hash: _, refresh_token: __, ...safeUser } = user;
+  return safeUser;
+}
+
+export async function updatePassword(userId: string, currentPassword: string, newPassword: string) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw Object.assign(new Error("User not found"), { statusCode: 404 });
+  const valid = await bcrypt.compare(currentPassword, user.password_hash);
+  if (!valid) throw Object.assign(new Error("Current password is incorrect"), { statusCode: 400 });
+  const password_hash = await bcrypt.hash(newPassword, 12);
+  await prisma.user.update({ where: { id: userId }, data: { password_hash } });
+}
+
+export async function deleteAccount(userId: string) {
+  const page = await prisma.page.findUnique({ where: { user_id: userId } });
+  if (page) {
+    await prisma.analyticsEvent.deleteMany({ where: { page_id: page.id } });
+    await prisma.block.deleteMany({ where: { page_id: page.id } });
+    await prisma.page.delete({ where: { id: page.id } });
+  }
+  await prisma.user.delete({ where: { id: userId } });
 }

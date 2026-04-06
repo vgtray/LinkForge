@@ -1,12 +1,11 @@
 import { Router, Request, Response } from "express";
 import { z } from "zod";
 import crypto from "crypto";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../lib/prisma";
 import * as analyticsService from "../services/analytics.service";
 import { authenticate } from "../middleware/auth";
 import { analyticsLimiter } from "../middleware/rateLimit";
 
-const prisma = new PrismaClient();
 const router = Router();
 
 const eventSchema = z.object({

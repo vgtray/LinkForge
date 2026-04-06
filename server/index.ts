@@ -15,11 +15,33 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 // Global middleware
-app.use(helmet({ contentSecurityPolicy: false }));
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "blob:"],
+        frameSrc: ["'self'", "https://www.youtube.com", "https://open.spotify.com"],
+        connectSrc: ["'self'", process.env.CORS_ORIGIN || "http://localhost:3000"],
+      },
+    },
+  })
+);
 app.use(cors({ origin: process.env.CORS_ORIGIN || "http://localhost:3000", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(generalLimiter);
+
+// Validate required env vars
+const requiredEnvVars = ["JWT_SECRET", "JWT_REFRESH_SECRET", "DATABASE_URL"];
+for (const envVar of requiredEnvVars) {
+  if (!process.env[envVar]) {
+    console.error(`FATAL: ${envVar} is not set`);
+    process.exit(1);
+  }
+}
 
 // Static uploads
 app.use("/uploads", express.static(path.resolve(__dirname, "../public/uploads")));
