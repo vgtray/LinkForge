@@ -12,6 +12,7 @@ import utilsRoutes from "./routes/utils";
 import { generalLimiter } from "./middleware/rateLimit";
 
 const app = express();
+app.set("trust proxy", 1);
 const PORT = process.env.PORT || 4000;
 
 // Global middleware
