@@ -22,6 +22,7 @@ export default function SettingsPage() {
   const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -48,6 +49,7 @@ export default function SettingsPage() {
         setUser(u);
         setUsername(u.username);
         setEmail(u.email);
+        setAvatarUrl(u.avatar_url ?? "");
       })
       .catch(() => toast.error("Failed to load profile"));
   }, []);
@@ -63,7 +65,7 @@ export default function SettingsPage() {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ username, email }),
+        body: JSON.stringify({ username, email, avatar_url: avatarUrl }),
       });
       if (!res.ok) {
         const err = await res.json();
@@ -163,6 +165,30 @@ export default function SettingsPage() {
               onChange={(e) => setEmail(e.target.value)}
               className="border-[#27272A] bg-[#09090B] text-[#FAFAFA] focus-visible:ring-[#3B82F6]"
             />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-[#A1A1AA]">
+              Avatar URL
+            </label>
+            <div className="flex items-center gap-4">
+              {avatarUrl && (
+                <img
+                  src={avatarUrl}
+                  alt="Avatar preview"
+                  className="h-10 w-10 rounded-full object-cover border border-[#27272A]"
+                />
+              )}
+              <Input
+                type="url"
+                value={avatarUrl}
+                onChange={(e) => setAvatarUrl(e.target.value)}
+                placeholder="https://example.com/avatar.jpg"
+                className="border-[#27272A] bg-[#09090B] text-[#FAFAFA] focus-visible:ring-[#3B82F6]"
+              />
+            </div>
+            <p className="mt-1 text-xs text-[#71717A]">
+              Paste a URL to an image to use as your profile avatar.
+            </p>
           </div>
           <Button
             onClick={handleSaveProfile}

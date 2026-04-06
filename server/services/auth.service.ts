@@ -111,7 +111,7 @@ export async function getMe(userId: string) {
   return safeUser;
 }
 
-export async function updateProfile(userId: string, data: { username?: string; email?: string }) {
+export async function updateProfile(userId: string, data: { username?: string; email?: string; avatar_url?: string }) {
   if (data.username || data.email) {
     const existing = await prisma.user.findFirst({
       where: {
@@ -131,7 +131,11 @@ export async function updateProfile(userId: string, data: { username?: string; e
   }
   const user = await prisma.user.update({
     where: { id: userId },
-    data: { ...(data.username && { username: data.username }), ...(data.email && { email: data.email }) },
+    data: {
+      ...(data.username && { username: data.username }),
+      ...(data.email && { email: data.email }),
+      ...(data.avatar_url !== undefined && { avatar_url: data.avatar_url || null }),
+    },
   });
   const { password_hash: _, refresh_token: __, ...safeUser } = user;
   return safeUser;

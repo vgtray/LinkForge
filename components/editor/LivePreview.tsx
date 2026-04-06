@@ -30,6 +30,32 @@ function BlockButton({
     textDecoration: "none",
   };
 
+  const ICON_MAP: Record<string, string> = {
+    link: "\u{1F517}",
+    globe: "\u{1F310}",
+    mail: "\u2709\uFE0F",
+    phone: "\u{1F4F1}",
+    file: "\u{1F4C4}",
+    star: "\u2B50",
+    heart: "\u2764\uFE0F",
+    bookmark: "\u{1F516}",
+    "shopping-cart": "\u{1F6D2}",
+    music: "\u{1F3B5}",
+    camera: "\u{1F4F7}",
+    code: "\u{1F4BB}",
+    coffee: "\u2615",
+    zap: "\u26A1",
+  };
+
+  const iconEmoji = block.icon ? ICON_MAP[block.icon] : null;
+
+  const label = (
+    <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+      {iconEmoji && <span>{iconEmoji}</span>}
+      <span>{block.title || "Untitled"}</span>
+    </span>
+  );
+
   switch (style) {
     case "outline":
       return (
@@ -41,7 +67,7 @@ function BlockButton({
             color: theme.textColor ?? "#FAFAFA",
           }}
         >
-          {block.title || "Untitled"}
+          {label}
         </div>
       );
     case "glass":
@@ -56,7 +82,7 @@ function BlockButton({
             color: btnText,
           }}
         >
-          {block.title || "Untitled"}
+          {label}
         </div>
       );
     case "brutal":
@@ -71,7 +97,7 @@ function BlockButton({
             borderRadius: "0px",
           }}
         >
-          {block.title || "Untitled"}
+          {label}
         </div>
       );
     case "shadow":
@@ -84,7 +110,7 @@ function BlockButton({
             boxShadow: `0 4px 14px ${btnColor}44`,
           }}
         >
-          {block.title || "Untitled"}
+          {label}
         </div>
       );
     default: // fill
@@ -96,7 +122,7 @@ function BlockButton({
             color: btnText,
           }}
         >
-          {block.title || "Untitled"}
+          {label}
         </div>
       );
   }
@@ -197,6 +223,7 @@ export function LivePreview({
                 }
 
                 if (block.type === "about") {
+                  const aboutAvatarUrl = block.settings?.avatar_url as string | undefined;
                   return (
                     <div
                       key={block.id}
@@ -208,6 +235,16 @@ export function LivePreview({
                         color: theme.textColor ?? "#FAFAFA",
                       }}
                     >
+                      {aboutAvatarUrl && (
+                        <div className="mb-3 flex justify-center">
+                          <img
+                            src={aboutAvatarUrl}
+                            alt=""
+                            className="h-16 w-16 rounded-full object-cover"
+                            style={{ border: `2px solid ${theme.cardBorder ?? "#27272A"}` }}
+                          />
+                        </div>
+                      )}
                       {(block.settings?.bio as string) || "About me..."}
                     </div>
                   );

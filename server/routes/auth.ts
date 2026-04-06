@@ -88,6 +88,7 @@ router.post("/refresh", async (req: Request, res: Response) => {
 const updateProfileSchema = z.object({
   username: z.string().regex(/^[a-z0-9_-]{3,30}$/).optional(),
   email: z.string().email().optional(),
+  avatar_url: z.string().url().optional().or(z.literal("")),
 });
 
 const updatePasswordSchema = z.object({

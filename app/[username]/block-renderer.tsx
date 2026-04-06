@@ -55,6 +55,23 @@ function trackClick(pageId: string, blockId: string) {
   }).catch(() => {});
 }
 
+const ICON_MAP: Record<string, string> = {
+  link: "\u{1F517}",
+  globe: "\u{1F310}",
+  mail: "\u2709\uFE0F",
+  phone: "\u{1F4F1}",
+  file: "\u{1F4C4}",
+  star: "\u2B50",
+  heart: "\u2764\uFE0F",
+  bookmark: "\u{1F516}",
+  "shopping-cart": "\u{1F6D2}",
+  music: "\u{1F3B5}",
+  camera: "\u{1F4F7}",
+  code: "\u{1F4BB}",
+  coffee: "\u2615",
+  zap: "\u26A1",
+};
+
 function LinkButton({
   block,
   theme,
@@ -67,7 +84,7 @@ function LinkButton({
   const style = theme.buttonStyle || "fill";
 
   const base =
-    "flex w-full items-center justify-center px-5 py-3.5 text-sm font-medium transition-transform active:scale-[0.98]";
+    "flex w-full items-center justify-center gap-2 px-5 py-3.5 text-sm font-medium transition-transform active:scale-[0.98]";
 
   const styles: Record<string, string> = {
     fill: "text-[var(--btn-text)]",
@@ -96,6 +113,8 @@ function LinkButton({
     inlineStyle.color = "var(--btn-text)";
   }
 
+  const iconEmoji = block.icon ? ICON_MAP[block.icon] : null;
+
   return (
     <a
       href={block.url || "#"}
@@ -105,6 +124,7 @@ function LinkButton({
       className={`${base} ${styles[style] || ""}`}
       style={inlineStyle}
     >
+      {iconEmoji && <span>{iconEmoji}</span>}
       {block.title}
     </a>
   );
@@ -152,12 +172,24 @@ export function BlockRenderer({
       );
     }
 
-    case "about":
+    case "about": {
+      const aboutAvatarUrl = block.settings?.avatar_url as string | undefined;
       return (
         <div className="text-sm leading-relaxed opacity-80">
-          {block.title}
+          {aboutAvatarUrl && (
+            <div className="mb-3 flex justify-center">
+              <img
+                src={aboutAvatarUrl}
+                alt=""
+                className="h-16 w-16 rounded-full object-cover"
+                style={{ border: "2px solid var(--card-border, #27272A)" }}
+              />
+            </div>
+          )}
+          {(block.settings?.bio as string) || block.title}
         </div>
       );
+    }
 
     case "embed": {
       if (!block.url) return null;
