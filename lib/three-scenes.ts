@@ -8,7 +8,7 @@ export interface ParticleFieldConfig {
 }
 
 export const DEFAULT_PARTICLE_CONFIG: ParticleFieldConfig = {
-  count: 2000,
+  count: 800,
   size: 2,
   color: "#3B82F6",
   speed: 0.3,

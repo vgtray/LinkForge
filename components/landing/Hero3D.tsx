@@ -2,14 +2,14 @@
 
 import { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { AdditiveBlending } from "three";
+import { AdditiveBlending, Points } from "three";
 import {
   createParticlePositions,
   DEFAULT_PARTICLE_CONFIG,
 } from "@/lib/three-scenes";
 
 function ParticleField() {
-  const pointsRef = useRef<THREE.Points>(null);
+  const pointsRef = useRef<Points>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const { viewport } = useThree();
 
@@ -69,10 +69,10 @@ function ParticleField() {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.03}
+        size={0.015}
         color={DEFAULT_PARTICLE_CONFIG.color}
         transparent
-        opacity={0.12}
+        opacity={0.6}
         blending={AdditiveBlending}
         depthWrite={false}
         sizeAttenuation
