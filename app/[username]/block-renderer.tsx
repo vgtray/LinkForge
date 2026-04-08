@@ -175,7 +175,7 @@ export function BlockRenderer({
     case "about": {
       const aboutAvatarUrl = block.settings?.avatar_url as string | undefined;
       return (
-        <div className="text-sm leading-relaxed opacity-80">
+        <div className="text-sm leading-relaxed opacity-80" style={{ whiteSpace: "pre-wrap" }}>
           {aboutAvatarUrl && (
             <div className="mb-3 flex justify-center">
               <img
